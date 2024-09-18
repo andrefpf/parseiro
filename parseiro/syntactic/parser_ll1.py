@@ -1,3 +1,6 @@
+import inspect
+
+from parseiro.lexical.token import Token
 from parseiro.symbols import Epsilon, EndMarker
 
 '''
@@ -42,10 +45,10 @@ class ParserLL1:
         }
 
         index = 0
-        tokens = list("n+n*n")
+        tokens = list(string)
         tokens.append(EndMarker())
 
-        stack = [Epsilon(), "E"]
+        stack = [EndMarker(), "E"]
 
         while len(stack) > 1:
             print(stack)
@@ -73,7 +76,6 @@ class ParserLL1:
             production = table[node, token]
             stack.extend(reversed(production))
 
-        print(stack)
-
-p = ParserLL1()
-p.analyze("")
+if __name__ == "__main__":
+    p = ParserLL1()
+    p.analyze("n+n*n")

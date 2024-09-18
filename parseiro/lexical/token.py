@@ -6,5 +6,5 @@ class Token:
         '''
         Use the input string to get a lexeme and return the remaining part.
         '''
-        self.lexeme = ""
-        return string
+        self.lexeme = string[0]
+        return string[1:]
