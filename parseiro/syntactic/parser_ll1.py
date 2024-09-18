@@ -1,3 +1,5 @@
+from parseiro.symbols import Epsilon, EndMarker
+
 '''
 # Initial Grammar
 E -> E + T
@@ -24,25 +26,26 @@ class ParserLL1:
             ("E", "("): ("T", "E1"),
             
             ("E1", "+"): ("+", "T", "E1"),
-            ("E1", ")"): ("&",),
-            ("E1", "$"): ("&",),
+            ("E1", ")"): (Epsilon(),),
+            ("E1", EndMarker()): (Epsilon(),),
 
             ("T", "n"): ("F", "T1"),
             ("T", "("): ("F", "T1"),
             
-            ("T1", "+"): ("&",),
+            ("T1", "+"): (Epsilon(),),
             ("T1", "*"): ("*", "F", "T1"),
-            ("T1", ")"): ("&",),
-            ("T1", "$"): ("&",),
+            ("T1", ")"): (Epsilon(),),
+            ("T1", EndMarker()): (Epsilon(),),
 
             ("F", "n"): ("n",),
             ("F", "("): ("(", "E", ")"),
         }
 
         index = 0
-        tokens = "n+n*n$"
+        tokens = list("n+n*n")
+        tokens.append(EndMarker())
 
-        stack = ["$", "E"]
+        stack = [Epsilon(), "E"]
 
         while len(stack) > 1:
             print(stack)
@@ -51,15 +54,18 @@ class ParserLL1:
             print(node, token)
             print()
 
-            # & is a epsilon transition
-            if node == "&":
+            if node == Epsilon():
                 continue
+
+            if node == EndMarker():
+                print("Syntactical error")
+                break
 
             # Terminal char
             if node in "n+*()":
                 index += 1
                 continue
-            
+
             if (node, token) not in table:
                 print("Syntactical error")
                 break
