@@ -1,4 +1,10 @@
-class Token:
+class MetaToken(type):
+    def __str__(self) -> str:
+        obj, *_ = self.mro()
+        return f"<{obj.__name__}>"
+
+
+class Token(str, metaclass=MetaToken):
     def __init__(self, lexeme="") -> None:
         self.lexeme = lexeme
 
