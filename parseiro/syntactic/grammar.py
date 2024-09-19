@@ -2,6 +2,7 @@ from typing import Any
 from collections import defaultdict
 from itertools import pairwise
 from functools import cache
+from tabulate import tabulate
 
 from parseiro.symbols import GrammarVariable, Epsilon, EndMarker
 from parseiro.syntactic.production_rule import ProductionRule
@@ -25,24 +26,28 @@ class Grammar:
 
         self.get_first_set.cache_clear()
         self.get_follow_set.cache_clear()
+        self.get_terminal_symbols.cache_clear()
+        self.get_non_terminal_symbols.cache_clear()
 
         p = ProductionRule(GrammarVariable(origin), target)
         self._production_rules.append(p)
     
-    def non_terminal_symbols(self) -> set:
+    @cache
+    def get_non_terminal_symbols(self) -> set:
         return {production.origin for production in self._production_rules}
 
-    def terminal_symbols(self) -> set:
+    @cache
+    def get_terminal_symbols(self) -> set:
         non_empty = set()
         for production in self._production_rules:
             non_empty |= production.get_target_symbols()
-        return non_empty - self.non_terminal_symbols()
+        return non_empty - self.get_non_terminal_symbols()
 
     @cache
     def get_first_set(self):
         first = defaultdict(set)
 
-        for symbol in self.terminal_symbols():
+        for symbol in self.get_terminal_symbols():
             first[symbol].add(symbol)
 
         modified = True
@@ -102,6 +107,22 @@ class Grammar:
 
         follow.pop(Epsilon(), None)
         return dict(follow)
+
+    def print_first_follow_table(self):
+        first_set = self.get_first_set()
+        follow_set = self.get_follow_set()
+
+        headers = ["Symbol", "First", "Follow"]
+        data = []
+
+        for symbol in self.get_non_terminal_symbols():
+            first = " ".join(str(i) for i in first_set[symbol])
+            follow = " ".join(str(i) for i in follow_set[symbol])
+            row = (symbol, first, follow)
+            data.append(row)
+
+        table = tabulate(data, headers=headers, tablefmt="fancy_grid")
+        print(table)
 
     def __getattr__(self, name: str):
         if name.isupper():

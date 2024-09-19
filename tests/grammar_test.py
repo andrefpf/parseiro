@@ -16,5 +16,8 @@ def test_first_follow():
     g.F  = "id"
     g.F  = "(", g.E, ")"
 
-    print(g.get_first_set())
-    print(g.get_follow_set())
+    print()
+    g.print_first_follow_table()
+
+    # print(g.get_first_set())
+    # print(g.get_follow_set())
