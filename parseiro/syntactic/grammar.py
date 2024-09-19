@@ -16,6 +16,8 @@ class Grammar:
 
     def add_production_rule(self, origin, target):
         # Transform target into a tuple
+        if isinstance(target, str):
+            target = (target,)
         try:
             target = tuple(target)
         except TypeError:
@@ -27,18 +29,20 @@ class Grammar:
         p = ProductionRule(GrammarVariable(origin), target)
         self._production_rules.append(p)
     
-    def non_terminal_symbols(self):
+    def non_terminal_symbols(self) -> set:
         return {production.origin for production in self._production_rules}
 
-    def terminal_symbols(self):
-        non_empty = {production.non_empty_symbols() for production in self._production_rules}
+    def terminal_symbols(self) -> set:
+        non_empty = set()
+        for production in self._production_rules:
+            non_empty |= production.get_target_symbols()
         return non_empty - self.non_terminal_symbols()
 
     @cache
     def get_first_set(self):
         first = defaultdict(set)
 
-        for symbol in self.terminal:
+        for symbol in self.terminal_symbols():
             first[symbol].add(symbol)
 
         modified = True
@@ -78,7 +82,7 @@ class Grammar:
             modified = False
 
             for production in self._production_rules:
-                target_symbols = production.get_target_symbols()
+                target_symbols = list(production.get_target_symbols())
 
                 for sym_a, sym_b in pairwise(target_symbols):
                     to_append = first[sym_b] - {Epsilon()}
