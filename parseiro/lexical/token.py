@@ -1,10 +1,15 @@
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from parseiro.lexical.automata import FiniteAutomata
+
+
 class MetaToken(type):
     def __str__(self) -> str:
-        obj, *_ = self.mro()
-        return f"<{obj.__name__}>"
+        cls, *_ = self.mro()
+        return f"<{cls.__name__}>"
 
 
-class Token(str, metaclass=MetaToken):
+class Token(metaclass=MetaToken):
     def __init__(self, lexeme="") -> None:
         self.lexeme = lexeme
 
@@ -14,3 +19,21 @@ class Token(str, metaclass=MetaToken):
         '''
         self.lexeme = string[0]
         return string[1:]
+
+    def __str__(self) -> str:
+        cls = self.__class__
+        return f'<{cls.__name__} "{self.lexeme}">'
+
+
+class RegexToken(Token):
+    regex: str = ""
+    automata: "FiniteAutomata | None"
+
+    def __init_subclass__(cls) -> None:
+        # TODO: create the actual automata here with cls.regex
+        cls.automata = None
+        return super().__init_subclass__()
+
+    def consume(self, string: str) -> str:
+        # TODO: consume according to the regex
+        return super().consume(string)
