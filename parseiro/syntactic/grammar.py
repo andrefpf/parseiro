@@ -9,7 +9,10 @@ class GrammarVariable(str):
 
 class Grammar:
     def __init__(self) -> None:
-        self.__production_rules = list()
+        self._production_rules = list()
+    
+    def get_production_rule(self):
+        return self._production_rules
 
     def add_production_rule(self, origin, target):
         # Transform target into a tuple
@@ -19,16 +22,21 @@ class Grammar:
             target = (target,)
 
         p = ProductionRule(origin, target)
-        self.__production_rules.append(p)
+        self._production_rules.append(p)
+    
+    def __getattr__(self, name: str):
+        if name.isupper():
+            return GrammarVariable(name)
+        return super().__getattribute__(name)
 
-    def __getitem__(self, name: str) -> GrammarVariable:
-        return GrammarVariable(name)
-
-    def __setitem__(self, name: str, value: Any):
-        self.add_production_rule(GrammarVariable(name), value)        
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.isupper():
+            self.add_production_rule(GrammarVariable(name), value)
+        else:
+            return super().__setattr__(name, value)
 
     def __str__(self) -> str:
-        return "\n".join([str(i) for i in self.__production_rules])
+        return "\n".join([str(i) for i in self._production_rules])
 
 
 if __name__ == "__main__":
@@ -38,8 +46,9 @@ if __name__ == "__main__":
         pass
 
     g = Grammar()
-    g["A"] = "a", g["A"]
-    g["A"] = "b"
+
+    g.A = "a", g.A
+    g.A = "b"
 
     # print(Token)
     print(g)
