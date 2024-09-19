@@ -21,7 +21,7 @@ class Grammar:
         except TypeError:
             target = (target,)
 
-        p = ProductionRule(origin, target)
+        p = ProductionRule(GrammarVariable(origin), target)
         self._production_rules.append(p)
     
     def __getattr__(self, name: str):
@@ -31,7 +31,7 @@ class Grammar:
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name.isupper():
-            self.add_production_rule(GrammarVariable(name), value)
+            self.add_production_rule(name, value)
         else:
             return super().__setattr__(name, value)
 
@@ -40,18 +40,14 @@ class Grammar:
 
 
 if __name__ == "__main__":
-    from parseiro.lexical.token import Token
+    from parseiro.lexical.token import RegexToken
 
-    class IdToken(Token):
-        pass
+    class Identifier(RegexToken):
+        regex = r"1234"
 
     g = Grammar()
 
     g.A = "a", g.A
-    g.A = "b"
+    g.A = "b", Identifier
 
-    # print(Token)
     print(g)
-
-    # g._A = "a", g._A
-    # g._A = IdToken
