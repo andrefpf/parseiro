@@ -1,16 +1,19 @@
 from dataclasses import dataclass
 
+from parseiro.lexical.token import Token
+from parseiro.symbols import GrammarVariable, Epsilon, EndMarker
+
 
 @dataclass
 class ProductionRule:
     origin: str
     target: str
     
-    def target_symbols(self):
-        return (i for i in self.target)
+    def get_target_symbols(self):
+        return (i for i in self.target if isinstance(i, Token) or not callable(i))
 
     def non_empty_symbols(self):
-        return (i for i in self.target_symbols() if not isinstance(i, int))
+        return (i for i in self.get_target_symbols() if not isinstance(i, (Epsilon, EndMarker, GrammarVariable)))
 
     def __str__(self) -> str:
         def representation(x):
@@ -18,5 +21,5 @@ class ProductionRule:
                 return f'"{x}"'
             return str(x)
 
-        targets = " ".join(representation(i) for i in self.target_symbols())
+        targets = " ".join(representation(i) for i in self.get_target_symbols())
         return f"{self.origin} → {targets}"

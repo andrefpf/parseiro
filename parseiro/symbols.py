@@ -14,3 +14,8 @@ class Epsilon(CustomSymbol):
 class EndMarker(CustomSymbol):
     def __repr__(self) -> str:
         return "$"
+
+
+class GrammarVariable(str):
+    def __hash__(self) -> int:
+        return f"GrammarVariable({str(self)})"
