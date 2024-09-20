@@ -23,3 +23,6 @@ class EndMarker(CustomSymbol):
 class GrammarVariable(str):
     def __hash__(self) -> int:
         return hash(("GrammarVariable", str(self)))
+
+    def __eq__(self, other: object) -> bool:
+        return hash(self) == hash(other)
