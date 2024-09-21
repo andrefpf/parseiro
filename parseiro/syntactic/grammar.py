@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Iterator
 from collections import defaultdict
 from itertools import pairwise
 from functools import cache
 from tabulate import tabulate
 
+from parseiro.lexical.token import Token
 from parseiro.symbols import GrammarVariable, Epsilon, EndMarker
 from parseiro.syntactic.production_rule import ProductionRule
 
@@ -12,7 +13,7 @@ class Grammar:
     def __init__(self) -> None:
         self._production_rules: list[ProductionRule] = list()
     
-    def get_production_rule(self):
+    def get_production_rules(self):
         return self._production_rules
 
     def add_production_rule(self, origin, target):
@@ -33,15 +34,27 @@ class Grammar:
         self._production_rules.append(p)
     
     @cache
-    def get_non_terminal_symbols(self) -> set:
-        return {production.origin for production in self._production_rules}
+    def get_non_terminal_symbols(self) -> Iterator[GrammarVariable]:
+        repeated = set()
+        for production in self.get_production_rules():
+            if production.origin in repeated:
+                continue
+            repeated.add(production.origin)
+            yield production.origin
 
     @cache
-    def get_terminal_symbols(self) -> set:
-        non_empty = set()
-        for production in self._production_rules:
-            non_empty |= production.get_target_symbols()
-        return non_empty - self.get_non_terminal_symbols()
+    def get_terminal_symbols(self) -> Iterator[Token | str]:
+        repeated = set()
+        for production in self.get_production_rules():
+            for symbol in production.get_target_symbols():
+                if symbol in repeated:
+                    continue
+                
+                if isinstance(symbol, GrammarVariable):
+                    continue
+
+                repeated.add(symbol)
+                yield symbol
 
     @cache
     def get_first_set(self):
@@ -116,8 +129,8 @@ class Grammar:
         data = []
 
         for symbol in self.get_non_terminal_symbols():
-            first = " ".join(str(i) for i in first_set[symbol])
-            follow = " ".join(str(i) for i in follow_set[symbol])
+            first = " ".join(str(i) for i in sorted(first_set[symbol]))
+            follow = " ".join(str(i) for i in sorted(follow_set[symbol]))
             row = (symbol, first, follow)
             data.append(row)
 

@@ -10,7 +10,7 @@ class ProductionRule:
     target: str
     
     def get_target_symbols(self):
-        return {i for i in self.target if isinstance(i, Token) or not callable(i)}
+        return (i for i in self.target if isinstance(i, Token) or not callable(i))
 
     def get_non_empty_symbols(self):
         return (i for i in self.get_target_symbols() if not isinstance(i, (Epsilon, EndMarker, GrammarVariable)))
