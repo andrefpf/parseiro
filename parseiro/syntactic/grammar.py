@@ -1,18 +1,19 @@
-from typing import Any, Iterator
 from collections import defaultdict
-from itertools import pairwise
 from functools import cache
+from itertools import pairwise
+from typing import Any, Iterator
+
 from tabulate import tabulate
 
 from parseiro.lexical.token import Token
-from parseiro.symbols import GrammarVariable, Epsilon, EndMarker
+from parseiro.symbols import EndMarker, Epsilon, GrammarVariable
 from parseiro.syntactic.production_rule import ProductionRule
 
 
 class Grammar:
     def __init__(self) -> None:
         self._production_rules: list[ProductionRule] = list()
-    
+
     def get_production_rules(self):
         return self._production_rules
 
@@ -28,12 +29,10 @@ class Grammar:
 
         self.get_first_set.cache_clear()
         self.get_follow_set.cache_clear()
-        # self.get_terminal_symbols.cache_clear()
-        # self.get_non_terminal_symbols.cache_clear()
 
         p = ProductionRule(GrammarVariable(origin), target)
         self._production_rules.append(p)
-    
+
     def get_non_terminal_symbols(self) -> Iterator[GrammarVariable]:
         repeated = set()
         for production in self.get_production_rules():
@@ -48,7 +47,7 @@ class Grammar:
             for symbol in production.get_target_symbols():
                 if symbol in repeated:
                     continue
-                
+
                 if isinstance(symbol, GrammarVariable):
                     continue
 

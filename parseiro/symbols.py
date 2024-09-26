@@ -2,7 +2,7 @@ class CustomSymbol(str):
     def __hash__(self) -> int:
         name = self.__class__.__name__
         return hash((name, str(self)))
-    
+
     def __str__(self) -> str:
         return repr(self)
 

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from tabulate import tabulate
 
 DEAD_STATE_INDEX = -1

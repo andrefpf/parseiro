@@ -1,9 +1,9 @@
 import inspect
 
 from parseiro.lexical.token import Token
-from parseiro.symbols import Epsilon, EndMarker
+from parseiro.symbols import EndMarker, Epsilon
 
-'''
+"""
 # Initial Grammar
 E -> E + T
 E -> T
@@ -19,7 +19,7 @@ T  -> F T1
 T1 -> * F T1 | &
 F  -> n
 F  -> (E)
-'''
+"""
 
 
 class ParserLL1:
@@ -27,19 +27,15 @@ class ParserLL1:
         table = {
             ("E", "n"): ("T", "E1"),
             ("E", "("): ("T", "E1"),
-            
             ("E1", "+"): ("+", "T", "E1"),
             ("E1", ")"): (Epsilon(),),
             ("E1", EndMarker()): (Epsilon(),),
-
             ("T", "n"): ("F", "T1"),
             ("T", "("): ("F", "T1"),
-            
             ("T1", "+"): (Epsilon(),),
             ("T1", "*"): ("*", "F", "T1"),
             ("T1", ")"): (Epsilon(),),
             ("T1", EndMarker()): (Epsilon(),),
-
             ("F", "n"): ("n",),
             ("F", "("): ("(", "E", ")"),
         }
@@ -72,9 +68,10 @@ class ParserLL1:
             if (node, token) not in table:
                 print("Syntactical error")
                 break
-            
+
             production = table[node, token]
             stack.extend(reversed(production))
+
 
 if __name__ == "__main__":
     p = ParserLL1()

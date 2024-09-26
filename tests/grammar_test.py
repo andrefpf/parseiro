@@ -1,22 +1,22 @@
 from pprint import pprint
 
+from parseiro.symbols import EndMarker, Epsilon, GrammarVariable
 from parseiro.syntactic.grammar import Grammar
-from parseiro.symbols import Epsilon, EndMarker, GrammarVariable
 
 
 def test_terminal_and_non_terminal():
     g = Grammar()
 
-    g.E  = g.T, g.E1
+    g.E = g.T, g.E1
     g.E1 = "+", g.T, g.E1
     g.E1 = Epsilon()
 
-    g.T  = g.F, g.T1
+    g.T = g.F, g.T1
     g.T1 = "*", g.F, g.T1
     g.T1 = Epsilon()
 
-    g.F  = "id"
-    g.F  = "(", g.E, ")"
+    g.F = "id"
+    g.F = "(", g.E, ")"
 
     correct_terminal = {Epsilon(), "(", ")", "*", "+", "id"}
     correct_non_terminal = {GrammarVariable(i) for i in ["E", "E1", "F", "T", "T1"]}
@@ -24,20 +24,20 @@ def test_terminal_and_non_terminal():
     assert set(g.get_terminal_symbols()) == correct_terminal
     assert set(g.get_non_terminal_symbols()) == correct_non_terminal
 
+
 def test_first_follow():
     g = Grammar()
 
-    g.E  = g.T, g.E1
+    g.E = g.T, g.E1
     g.E1 = "+", g.T, g.E1
     g.E1 = Epsilon()
 
-    g.T  = g.F, g.T1
+    g.T = g.F, g.T1
     g.T1 = "*", g.F, g.T1
     g.T1 = Epsilon()
 
-    g.F  = "id"
-    g.F  = "(", g.E, ")"
-
+    g.F = "id"
+    g.F = "(", g.E, ")"
 
     # https://www.geeksforgeeks.org/construction-of-ll1-parsing-table/
     correct_first_set = {

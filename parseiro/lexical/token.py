@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from parseiro.lexical.automata import FiniteAutomata
 
@@ -14,9 +15,9 @@ class Token(metaclass=MetaToken):
         self.lexeme = lexeme
 
     def consume(self, string: str) -> str:
-        '''
+        """
         Use the input string to get a lexeme and return the remaining part.
-        '''
+        """
         self.lexeme = string[0]
         return string[1:]
 
