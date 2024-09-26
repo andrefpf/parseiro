@@ -100,10 +100,14 @@ class Grammar:
             for production in self._production_rules:
                 target_symbols = list(production.get_target_symbols())
 
+                sym_a, sym_b = None, None
                 for sym_a, sym_b in pairwise(target_symbols):
                     to_append = first[sym_b] - {Epsilon()}
                     modified |= not to_append.issubset(follow[sym_a])
                     follow[sym_a] |= to_append
+
+                if (sym_a is None) and (sym_b is None):
+                    continue
 
                 if target_symbols:
                     last_symbol = target_symbols[-1]

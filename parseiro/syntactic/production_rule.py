@@ -6,8 +6,8 @@ from parseiro.symbols import EndMarker, Epsilon, GrammarVariable
 
 @dataclass
 class ProductionRule:
-    origin: str
-    target: str
+    origin: GrammarVariable
+    target: tuple[str]
 
     def get_target_symbols(self):
         return (i for i in self.target if isinstance(i, Token) or not callable(i))
