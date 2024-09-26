@@ -17,20 +17,14 @@ class Grammar:
     def get_production_rules(self):
         return self._production_rules
 
-    def add_production_rule(self, origin, target):
-        # Transform target into a tuple
-        if isinstance(target, str):
-            target = (target,)
-
-        try:
-            target = tuple(target)
-        except TypeError:
-            target = (target,)
+    def add_production_rule(self, origin: (GrammarVariable | str), target: tuple[GrammarVariable | str | Token]):
+        if not isinstance(origin, GrammarVariable):
+            origin = GrammarVariable(origin)
 
         self.get_first_set.cache_clear()
         self.get_follow_set.cache_clear()
 
-        p = ProductionRule(GrammarVariable(origin), target)
+        p = ProductionRule(origin, target)
         self._production_rules.append(p)
 
     def get_non_terminal_symbols(self) -> Iterator[GrammarVariable]:
@@ -142,16 +136,14 @@ class Grammar:
         table = tabulate(data, headers=headers, tablefmt="fancy_grid")
         print(table)
 
-    def __getattr__(self, name: str):
-        if name.isupper():
-            return GrammarVariable(name)
-        return super().__getattribute__(name)
+    def __getitem__(self, name: str) -> GrammarVariable:
+        return GrammarVariable(name)
 
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name.isupper():
-            self.add_production_rule(name, value)
-        else:
-            return super().__setattr__(name, value)
+    def __setitem__(self, name: GrammarVariable | str, value: Any) -> None:        
+        # turn value into a tuple
+        if isinstance(value, (str, GrammarVariable, Token)):
+            value = (value,)
+        self.add_production_rule(name, value)
 
     def __str__(self) -> str:
         return "\n".join([str(i) for i in self._production_rules])
@@ -164,8 +156,5 @@ if __name__ == "__main__":
         regex = r"1234"
 
     g = Grammar()
-
-    g.A = "a", g.A
-    g.A = "b", Identifier
-
-    print(g)
+    g["Hello"] = "a", g["Hello"]
+    g["Hello"] = "b", Identifier
