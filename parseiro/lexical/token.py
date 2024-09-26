@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 class MetaToken(type):
     def __str__(self) -> str:
+        # Print the uninitialized type as <Token>
         cls, *_ = self.mro()
         return f"<{cls.__name__}>"
 
