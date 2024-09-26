@@ -61,8 +61,8 @@ def test_first_follow():
         GrammarVariable("F"): {"*", "+", EndMarker(), ")"},
     }
 
-    # assert correct_first_set == g.get_first_set()
-    # assert correct_follow_set == g.get_follow_set()
+    assert correct_first_set == g.get_first_set()
+    assert correct_follow_set == g.get_follow_set()
 
     print()
     g.print_first_follow_table()
