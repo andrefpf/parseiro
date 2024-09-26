@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from parseiro.syntactic.grammar import Grammar
 from parseiro.symbols import Epsilon, EndMarker, GrammarVariable
 
@@ -66,7 +68,7 @@ def test_first_follow():
         assert correct_follow_set[s] == g.get_follow_set()[s]
 
     assert correct_first_set == g.get_first_set()
-    # assert correct_follow_set == g.get_follow_set()
+    assert correct_follow_set == g.get_follow_set()
 
     print()
     g.print_first_follow_table()

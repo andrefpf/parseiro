@@ -20,6 +20,7 @@ class Grammar:
         # Transform target into a tuple
         if isinstance(target, str):
             target = (target,)
+
         try:
             target = tuple(target)
         except TypeError:
@@ -27,13 +28,12 @@ class Grammar:
 
         self.get_first_set.cache_clear()
         self.get_follow_set.cache_clear()
-        self.get_terminal_symbols.cache_clear()
-        self.get_non_terminal_symbols.cache_clear()
+        # self.get_terminal_symbols.cache_clear()
+        # self.get_non_terminal_symbols.cache_clear()
 
         p = ProductionRule(GrammarVariable(origin), target)
         self._production_rules.append(p)
     
-    @cache
     def get_non_terminal_symbols(self) -> Iterator[GrammarVariable]:
         repeated = set()
         for production in self.get_production_rules():
@@ -42,7 +42,6 @@ class Grammar:
             repeated.add(production.origin)
             yield production.origin
 
-    @cache
     def get_terminal_symbols(self) -> Iterator[Token | str]:
         repeated = set()
         for production in self.get_production_rules():
@@ -118,7 +117,10 @@ class Grammar:
                     if Epsilon() in first[sym_b]:
                         follow[sym_a] |= follow[production.origin]
 
+        for symbol in self.get_terminal_symbols():
+            follow.pop(symbol, None)
         follow.pop(Epsilon(), None)
+
         return dict(follow)
 
     def print_first_follow_table(self):
