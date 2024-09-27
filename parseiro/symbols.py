@@ -26,3 +26,6 @@ class GrammarVariable(str):
 
     def __eq__(self, other: object) -> bool:
         return hash(self) == hash(other)
+
+    def __repr__(self) -> str:
+        return str(self)
